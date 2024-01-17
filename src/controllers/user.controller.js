@@ -26,12 +26,31 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (existingUser) {
-    throw new ApiError(409, "username or email are not available");
+    throw new ApiError(409, "username or email already in use, please enter some different username or email.");
   }
 
+
+  // WRONG WAY TO EXTRACT PATH, IF FILE OR ARRAY IS MISSING THAN THROWS UNDEFINED TYPEERROR
   // get local path of avatar and coverImage
-  const avatarLocalPath = req.files?.avatar[0]?.path;
-  const coverImageLocalPath = req.files?.coverImage[0]?.path;
+  // const avatarLocalPath = req.files?.avatar[0]?.path;
+  // const coverImageLocalPath = req.files?.coverImage[0]?.path;
+
+
+  // check if avatar is given, then extract path from it
+  let avatarLocalPath;
+  if(req.files && Array.isArray(req.files.avatar) && req.files.avatar.length > 0){
+    avatarLocalPath = req.files.avatar[0].path;
+  }else{
+    console.log('Avatar is not given.');
+  }
+
+  // check if coverImage is given, then extract path from it
+  let coverImageLocalPath;
+  if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+    coverImageLocalPath = req.files.coverImage[0].path;
+  }else{
+    console.log('CoverImage is not given.');
+  }
 
   // avatar is required, is not available than throw error
   if (!avatarLocalPath) {
